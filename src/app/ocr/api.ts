@@ -24,8 +24,14 @@ export async function ProcessImageRequest(openai: OpenAI, file_path: string) {
 
     const events = await parseImageForEvents(openai, encodedImage)
 
-    console.log(events)
+    return events
+}
 
+export async function TestProcessImageRequest() {
+    const eventsText = await fs.readFile("./public/data/Image from i.pinimg.com_events.json")
+    const eventsJson = JSON.parse(eventsText.toString())
+    const events = parseEvents(eventsJson)
+    return events
 }
 
 async function parseImageForEvents(openai: OpenAI, encoded_image: string) {
@@ -46,9 +52,11 @@ async function parseImageForEvents(openai: OpenAI, encoded_image: string) {
         max_tokens: 1024,
     }).asResponse();
     const eventsResponseJson = await eventsResponse.json()
-    const eventsText = eventsResponseJson.choices[0].message.content
+    let eventsStr = eventsResponseJson.choices[0].message.content
+    eventsStr = eventsStr.substring(7, eventsStr.length - 3)
+    let eventsJson = JSON.parse(eventsStr)
 
-    const events = parseEvents(eventsText)
+    const events = parseEvents(eventsJson)
 
     return events
 }
