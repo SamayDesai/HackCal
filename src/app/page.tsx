@@ -8,7 +8,7 @@ export default async function Home() {
 
   return (
     <div>
-      <h1>HackCal</h1>
+      <h1>HackCal!</h1>
     </div>
   );
 }
