@@ -2,14 +2,12 @@ import dayjs, { Dayjs } from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from 'dayjs/plugin/utc'
 
-import { promises as fs } from 'fs';
-
 import { z } from "zod";
 
 dayjs.extend(timezone)
 dayjs.extend(utc)
 
-type Event = {
+export type Event = {
     name: string,
     start: Dayjs,
     end: Dayjs,
@@ -31,7 +29,6 @@ export function parseEvents(eventsJson: any): Event[] {
     for (let event of eventsJson) {
         let parsedEvent = eventZod.safeParse(event)
         if (parsedEvent.success) {
-            let date = dayjs(parsedEvent.data.start)
             events.push({
                 name: parsedEvent.data.name,
                 start: dayjs(parsedEvent.data.start),

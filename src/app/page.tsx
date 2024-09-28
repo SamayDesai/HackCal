@@ -1,12 +1,33 @@
+'use client'
+
 import Image from "next/image";
-import { InitApiCall, ProcessImageRequest, TestApiCall, TestProcessImageRequest } from "./ocr/api";
+import { InitOpenAi, ProcessImageRequest, TestApiCall, TestProcessImageRequest } from "./openai";
+import { useEffect, useState } from "react";
+import { Event, parseEvents } from "./models";
 
-export default async function Home() {
+// TODO: Make backend API call to run OpenAI
 
-  // let openai = await InitApiCall()
-  // let test_call = await TestApiCall(openai)
-  // let info = await ProcessImageRequest(openai, `./public/examples/Image from i.pinimg.com.jpg`);
-  let events = await TestProcessImageRequest()
+type Repo = {
+  events: Event[]
+}
+
+export default function Home() {
+  const [events, setEvents] = useState<Event[]>([])
+
+  useEffect(() => {
+    const getEvents = async () => {
+    // let openai = await InitApiCall()
+    // let test_call = await TestApiCall(openai)
+    // let info = await ProcessImageRequest(openai, `./public/examples/Image from i.pinimg.com.jpg`);
+    // let events = await TestProcessImageRequest()
+
+      const eventsJson = await TestProcessImageRequest()
+      setEvents(parseEvents(eventsJson))
+    }
+
+    getEvents()
+  })
+
 
   return (
     <div>
