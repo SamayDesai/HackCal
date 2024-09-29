@@ -15,6 +15,8 @@ import dayjs from "dayjs";
 import { date, datetimeRegex } from "zod";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
+import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import GetUserId from "./firebase/auth";
 
   // TODO: Make backend API call to run OpenAI
 
@@ -25,10 +27,12 @@ import { OAuth2Client } from "google-auth-library";
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [db, setDb] = useState<Firestore>()
+  const [authCode, setAuthCode] = useState<string>()
+  const [userId, setUserId] = useState<string>()
 
 
-  // useEffect(() => {
-  //   setDb(InitFirestore())
+  useEffect(() => {
+    setDb(InitFirestore())
 
     // const getEvents = async () => {
     // // let openai = await InitOpenAi()
@@ -48,14 +52,26 @@ export default function Home() {
     // }
     // getEvents()
 
-  // }, []) // TODO: Remove empty array param
+  }, []) // TODO: Remove empty array param
 
-  // useEffect(() => {
-  //   console.log(db)
-  //   if (db) {
-  //     GetAllForUser(db as Firestore, "1", setEvents)
-  //   }
-  // }, [db])
+  useEffect(() => {
+    console.log(db)
+
+    const runDbStuff = async () => {
+      if (db && userId) {
+        const eventsJson = await TestProcessImageRequest()
+        const events = parseEvents(eventsJson)
+        setEvents(events)
+        GetAllForUser(db as Firestore, userId, setEvents)
+
+        // for (let event of events) {
+        //   WriteNewEvent(db as Firestore, userId, event)
+        // }
+      }
+    }
+
+    runDbStuff()
+  }, [db, userId])
 
   // const insertEvent = async () => {
 
@@ -102,12 +118,24 @@ export default function Home() {
   // });
   // }
 
+    useEffect(() => {
 
+      const runAuthStuff = async () => {
+        if (authCode) {
+          console.log("Auth code received")
 
+          setUserId(await GetUserId(authCode))
+
+        }
+      }
+
+      runAuthStuff()
+
+    }, [authCode])
 
   const login = useGoogleLogin({
       onSuccess: codeResponse => {
-        console.log(codeResponse.scope)
+        setAuthCode(codeResponse.code)
       },
       flow: 'auth-code',
       scope: 'https://www.googleapis.com/auth/calendar'
