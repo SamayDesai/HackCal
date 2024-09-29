@@ -2,6 +2,7 @@
 'use client'
 import { useState } from 'react'
 import FileUpload from '@/components/ui/file-upload';
+import DatetimePickerHourCycle from './ui/date-time';
 
 import {
   Progress,
@@ -50,7 +51,7 @@ const Form2 = () => {
         Confirm Event Details
       </Heading>
       <SimpleGrid columns={1} spacing={6}>
-        <FormControl as={GridItem} colSpan={[3, 2]}>
+        <FormControl as={GridItem} colSpan={[2, 2]}>
           <FormLabel
             fontSize="sm"
             fontWeight="md"
@@ -69,20 +70,58 @@ const Form2 = () => {
             />
           </InputGroup>
         </FormControl>
-        <FormControl>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50',
-            }}>
-            Date and Time
-          </FormLabel>
+        <FormControl as={GridItem} colSpan={[2, 2]}>
+
+          <div className="flex flex-col gap-3 lg:flex-row">
+            <div className="flex w-72 flex-col">
+              <FormLabel
+                fontSize="sm"
+                fontWeight="md"
+                color="gray.700"
+                _dark={{
+                  color: 'gray.50',
+                }}>Start Date</FormLabel>
+              <DatetimePickerHourCycle>
+
+              </DatetimePickerHourCycle>
+            </div>
+            <div className="flex w-72 flex-col">
+              <FormLabel
+                fontSize="sm"
+                fontWeight="md"
+                color="gray.700"
+                _dark={{
+                  color: 'gray.50',
+                }}>End Date</FormLabel>
+              <DatetimePickerHourCycle>
+
+              </DatetimePickerHourCycle>
+            </div>
+          </div>
 
           {/* location and  */}
+          <FormControl as={GridItem} colSpan={[2, 2]} paddingTop={5}>
+            <FormLabel
+              fontSize="sm"
+              fontWeight="md"
+              color="gray.700"
+              _dark={{
+                color: 'gray.50',
+              }}>
+              Event Location
+            </FormLabel>
+            <InputGroup size="sm">
+              <Input
+                type="tel"
+                placeholder="Mickey Mouse's Club House!!"
+                focusBorderColor="brand.400"
+                rounded="md"
+              />
+            </InputGroup>
+          </FormControl>
         </FormControl>
-        <FormControl id="email" mt={1}>
+
+        <FormControl as={GridItem} colSpan={[2, 2]}>
           <FormLabel
             fontSize="sm"
             fontWeight="md"
@@ -101,10 +140,8 @@ const Form2 = () => {
               sm: 'sm',
             }}
           />
-          <FormHelperText>
-            Brief description for your event. URLs are hyperlinked.
-          </FormHelperText>
         </FormControl>
+
       </SimpleGrid>
     </>
   )
@@ -113,7 +150,7 @@ const Form2 = () => {
 export default function EventForm() {
   const toast = useToast()
   const [step, setStep] = useState(1)
-  const [progress, setProgress] = useState(33.33)
+  const [progress, setProgress] = useState(50)
 
   return (
     <>
@@ -133,7 +170,7 @@ export default function EventForm() {
               <Button
                 onClick={() => {
                   setStep(step - 1)
-                  setProgress(progress - 33.33)
+                  setProgress(progress - 50)
                 }}
                 isDisabled={step === 1}
                 colorScheme="teal"
@@ -144,13 +181,13 @@ export default function EventForm() {
               </Button>
               <Button
                 w="7rem"
-                isDisabled={step === 3}
+                isDisabled={step === 2}
                 onClick={() => {
                   setStep(step + 1)
                   if (step === 3) {
                     setProgress(100)
                   } else {
-                    setProgress(progress + 33.33)
+                    setProgress(progress + 50)
                   }
                 }}
                 colorScheme="teal"
@@ -158,7 +195,7 @@ export default function EventForm() {
                 Next
               </Button>
             </Flex>
-            {step === 3 ? (
+            {step === 2 ? (
               <Button
                 w="7rem"
                 colorScheme="teal"
