@@ -11,7 +11,10 @@ import { Button } from "@chakra-ui/react";
 import { Firestore } from "firebase/firestore";
 import { useGoogleLogin } from "@react-oauth/google";
 import dayjs from "dayjs";
-import { GetAllForUser, InitFirestore } from "./firebase/firestore";
+// import { GetAllForUser, InitFirestore } from "./firebase/firestore";
+import { date, datetimeRegex } from "zod";
+import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
 
   // TODO: Make backend API call to run OpenAI
 
@@ -22,11 +25,10 @@ import { GetAllForUser, InitFirestore } from "./firebase/firestore";
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [db, setDb] = useState<Firestore>()
-  const [authCode, setAuthCode] = useState<string>()
 
 
-  useEffect(() => {
-    setDb(InitFirestore())
+  // useEffect(() => {
+  //   setDb(InitFirestore())
 
     // const getEvents = async () => {
     // // let openai = await InitOpenAi()
@@ -46,37 +48,70 @@ export default function Home() {
     // }
     // getEvents()
 
-  }, []) // TODO: Remove empty array param
+  // }, []) // TODO: Remove empty array param
 
-  useEffect(() => {
-    console.log(db)
-    if (db) {
-      GetAllForUser(db as Firestore, "1", setEvents)
-    }
-  }, [db])
+  // useEffect(() => {
+  //   console.log(db)
+  //   if (db) {
+  //     GetAllForUser(db as Firestore, "1", setEvents)
+  //   }
+  // }, [db])
 
-  useEffect(() => {
+  // const insertEvent = async () => {
 
-    if (authCode) {
-      console.log("Auth code received")
+  //   var event = {
+  //     summary: 
+  //     location: 
+  //     description: 
+  //     start: {
+  //       dateTime: 
+  //       timeZone:
+  //     }
+  //     end: {
+  //       datetime: 
+  //       timeZone:
+  //     }
+  //  OPTION A: 
+  //  try {    
+  //     const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+  //       method: 'POST',
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(event),
+  //     });
+  
+  //     const data = await response.json();
+  //     console.log('Event created: ', data);
+  //   } catch (error) {
+  //     console.error('Error creating event: ', error);
+  //   }
+
+  // OPTION B: 
+  // calendar.events.insert({
+  //   auth: auth, 
+  //   calendarId: 'primary',
+  //   resource: event
+  // }, function(err, event) {
+  //   if (err) {
+  //     console.log('There was an error contacting the Calendar service: ' + err);
+  //     return;
+  //   }
+  //   console.log('Event created: %s', event.htmlLink);
+  // });
+  // }
 
 
 
-    }
-
-  }, [authCode])
 
   const login = useGoogleLogin({
       onSuccess: codeResponse => {
-        setAuthCode(codeResponse.code)
+        console.log(codeResponse.scope)
       },
       flow: 'auth-code',
       scope: 'https://www.googleapis.com/auth/calendar'
     });
-
-  const getCalendar = async () => {
-
-  }
 
     return (
       <div>
