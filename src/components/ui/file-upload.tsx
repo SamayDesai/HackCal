@@ -4,8 +4,7 @@ import {
     Button,
   } from '@chakra-ui/react'
 
-export default function FileUpload() {
-  const [file, setFile] = useState<string>();
+export default function FileUpload({ file, setFile }: any) {
   const [fileEnter, setFileEnter] = useState(false);
   return (
     <div className="container px-4 max-w-5xl mx-auto">
@@ -62,13 +61,14 @@ export default function FileUpload() {
                 if (files && files[0]) {
                   if (files[0].type.startsWith('image/')) {
                     let blobUrl = URL.createObjectURL(files[0]);
+                    console.log(blobUrl)
                     setFile(blobUrl);
                   } else {
                     alert('Please select an image file');
                   }
                 }
               }}
-              
+
           />
         </div>
       ) : (

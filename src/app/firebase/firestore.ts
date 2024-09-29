@@ -1,7 +1,7 @@
 
 import { FirebaseOptions } from "firebase/app";
 import firebase from "firebase/compat/app";
-import { addDoc, collection, Firestore, getDoc, getDocs, getFirestore, initializeFirestore, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, Firestore, getDoc, getDocs, getFirestore, initializeFirestore, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import dayjs, { Dayjs } from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from 'dayjs/plugin/utc'
@@ -60,4 +60,13 @@ export function GetAllForUser(db: Firestore, user_id: string, setEvents: (events
     }, (error) => console.log(error.cause))
 
 
+}
+
+export function DeleteAllForUser(db: Firestore, user_id: string) {
+    const q = query(collection(db, `users/${user_id}/events`))
+    getDocs(q).then((snapshot) => {
+        snapshot.forEach((doc) => {
+            deleteDoc(doc.ref)
+        })
+    })
 }

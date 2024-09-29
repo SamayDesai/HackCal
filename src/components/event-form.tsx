@@ -25,8 +25,18 @@ import {
 } from '@chakra-ui/react'
 
 import { useToast } from '@chakra-ui/react'
+import { InitOpenAi, ProcessImageRequest } from '@/app/openai';
+import { Event } from '@/app/models';
 
-const Form1 = () => {
+async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
+    let openai = await InitOpenAi()
+    let newEvents = await ProcessImageRequest(openai, file)
+    setEvents(newEvents.concat(events))
+    return ""
+}
+
+
+const Form1 = ({ file, setFile }: any) => {
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
   return (
@@ -34,7 +44,7 @@ const Form1 = () => {
       <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
         Scan Your Picture!
       </Heading>
-      <FileUpload>
+      <FileUpload file={file} setFile={setFile} >
 
       </FileUpload>
 
@@ -147,10 +157,25 @@ const Form2 = () => {
   )
 }
 
-export default function EventForm() {
+export default function EventForm({ events, setEvents, setIsEventsUpdated }: any) {
   const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(50)
+  const [file, setFile] = useState("")
+
+  const handleClick = async () => {
+                  if (file !== "") {
+                    setStep(step + 1)
+                    if (step === 3) {
+                      setProgress(100)
+                    } else {
+                      setProgress(progress + 50)
+                    }
+
+                    await ProcessImage(file, events, setEvents)
+                    setIsEventsUpdated(true)
+                  }
+  }
 
   return (
     <>
@@ -163,7 +188,7 @@ export default function EventForm() {
         m="10px auto"
         as="form">
         <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>
-        {step === 1 ? <Form1 /> : step === 2 ? <Form2 /> : <Form2 />}
+        {step === 1 ? <Form1 file={file} setFile={setFile} /> : step === 2 ? <Form2 /> : <Form2 />}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
             <Flex>
@@ -182,14 +207,7 @@ export default function EventForm() {
               <Button
                 w="7rem"
                 isDisabled={step === 2}
-                onClick={() => {
-                  setStep(step + 1)
-                  if (step === 3) {
-                    setProgress(100)
-                  } else {
-                    setProgress(progress + 50)
-                  }
-                }}
+                onClick={handleClick}
                 colorScheme="teal"
                 variant="outline">
                 Next

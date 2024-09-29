@@ -31,7 +31,7 @@ import { DataTableChakra } from "./chakratabletester";
 import { date, datetimeRegex } from "zod";
 import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
-import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import { DeleteAllForUser, GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
 import GetUserId from "./firebase/auth";
 import { info } from "console";
 
@@ -124,6 +124,9 @@ export default function Home() {
   const [db, setDb] = useState<Firestore>()
   const [authCode, setAuthCode] = useState<string>()
   const [userId, setUserId] = useState<string>()
+  const [isEventsUpdated, setIsEventsUpdated] = useState<boolean>(false)
+
+  const prevEvents = React.useRef<Event[]>([])
 
 //   const eventsJSON = [
 //     {
@@ -190,6 +193,7 @@ export default function Home() {
       if (db && userId) {
         GetAllForUser(db as Firestore, userId, setEvents)
 
+
         // for (let event of events) {
         //   WriteNewEvent(db as Firestore, userId, event)
         // }
@@ -199,50 +203,15 @@ export default function Home() {
     runDbStuff()
   }, [db, userId])
 
-  // const insertEvent = async () => {
-
-  //   var event = {
-  //     summary:
-  //     location:
-  //     description:
-  //     start: {
-  //       dateTime:
-  //       timeZone:
-  //     }
-  //     end: {
-  //       datetime:
-  //       timeZone:
-  //     }
-  //  OPTION A:
-  //  try {
-  //     const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
-  //       method: 'POST',
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(event),
-  //     });
-
-  //     const data = await response.json();
-  //     console.log('Event created: ', data);
-  //   } catch (error) {
-  //     console.error('Error creating event: ', error);
-  //   }
-
-  // OPTION B:
-  // calendar.events.insert({
-  //   auth: auth,
-  //   calendarId: 'primary',
-  //   resource: event
-  // }, function(err, event) {
-  //   if (err) {
-  //     console.log('There was an error contacting the Calendar service: ' + err);
-  //     return;
-  //   }
-  //   console.log('Event created: %s', event.htmlLink);
-  // });
-  // }
+  useEffect(() => {
+    if (db && userId && isEventsUpdated) {
+      DeleteAllForUser(db, userId)
+      for (let event of events) {
+        WriteNewEvent(db, userId, event)
+      }
+      setIsEventsUpdated(false)
+    }
+  }, [events])
 
     useEffect(() => {
 
@@ -271,7 +240,7 @@ export default function Home() {
       <div>
         <Navigation loginFunc={login} />
         <div>
-          <EventForm />
+          <EventForm events={events} setEvents={setEvents} setIsEventsUpdated={setIsEventsUpdated} />
         </div>
 
 
