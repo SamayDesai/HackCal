@@ -1,8 +1,10 @@
+'use server'
+
 import OpenAI from "openai"
 import { promises as fs } from 'fs';
 import { parseEvents } from "./models";
 
-export async function InitApiCall() {
+export async function InitOpenAi() {
     return new OpenAI({
         apiKey: process.env["OPENAI_API_KEY"]
     })
@@ -17,6 +19,7 @@ export async function TestApiCall(openai: OpenAI) {
     return response
 }
 
+// TODO: Modify return type to just be JSON, parse to Event later
 export async function ProcessImageRequest(openai: OpenAI, file_path: string) {
     const imageBuffer = await fs.readFile(file_path);
     const base64Image = imageBuffer.toString('base64');
@@ -30,8 +33,9 @@ export async function ProcessImageRequest(openai: OpenAI, file_path: string) {
 export async function TestProcessImageRequest() {
     const eventsText = await fs.readFile("./public/data/Image from i.pinimg.com_events.json")
     const eventsJson = JSON.parse(eventsText.toString())
-    const events = parseEvents(eventsJson)
-    return events
+    return eventsJson
+    // const events = parseEvents(eventsJson)
+    // return events
 }
 
 async function parseImageForEvents(openai: OpenAI, encoded_image: string) {

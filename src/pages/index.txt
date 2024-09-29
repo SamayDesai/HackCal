@@ -1,0 +1,35 @@
+/**
+* this file has already been integrated into page.tsx, but its purpose is to create login button. 
+*/
+//imports here are for the Firebase SDK
+import { useState } from "react";
+import { signInWithPopup, User } from "firebase/auth";
+import { auth, provider } from "../app/firebaseConfig"; // Import your Firebase configuration
+
+
+const Home = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  const login = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      setUser(result.user);
+      console.log(result.user);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  return (
+    <div>
+      <h1>Google Calendar Integration</h1>
+      {user ? (
+        <p>Welcome, {user.displayName}</p>
+      ) : (
+        <button onClick={login}>Login with Google</button>
+      )}
+    </div>
+  );
+};
+
+export default Home;
