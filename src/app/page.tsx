@@ -33,6 +33,9 @@ import { google } from "googleapis";
 import { OAuth2Client } from "google-auth-library";
 import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
 import GetUserId from "./firebase/auth";
+import { info } from "console";
+
+import { AddToCalendarButton } from "add-to-calendar-button-react"
 
 
   // TODO: Make backend API call to run OpenAI
@@ -65,23 +68,45 @@ import GetUserId from "./firebase/auth";
     }
   ];
 
-  const columnHelper = createColumnHelper<UnitConversion>();
+  const columnHelper = createColumnHelper<Event>();
 
   const columns = [
-    columnHelper.accessor("fromUnit", {
+    columnHelper.accessor("name", {
       cell: (info) => info.getValue(),
-      header: "To convert"
+      header: "Name"
     }),
-    columnHelper.accessor("toUnit", {
+    columnHelper.accessor("location", {
       cell: (info) => info.getValue(),
-      header: "Into"
+      header: "Location"
     }),
-    columnHelper.accessor("factor", {
-      cell: (info) => info.getValue(),
-      header: "Multiply by",
+    columnHelper.accessor("start", {
+      cell: (info) => dayjs(info.getValue()).format("dddd, MMMM D, YYYY h:mm A"),
+      header: "Start",
       meta: {
-        isNumeric: true
+        isDate: true
       }
+    }),
+    columnHelper.accessor("end", {
+      cell: (info) => dayjs(info.getValue()).format("dddd, MMMM D, YYYY h:mm A"),
+      header: "End",
+      meta: {
+        isDate: true
+      }
+    }),
+    columnHelper.display({
+      cell: (info) => (
+        <AddToCalendarButton
+          name={info.row.original.name}
+          options={['Apple', 'Google']}
+          location={info.row.original.location}
+          startDate={dayjs(info.row.original.start).format("YYYY-MM-DD")}
+          endDate={dayjs(info.row.original.end).format("YYYY-MM-DD")}
+          startTime={dayjs(info.row.original.start).format("HH:mm")}
+          endTime={dayjs(info.row.original.end).format("HH:mm")}
+          timeZone="America/New_York"
+        ></AddToCalendarButton>
+      ),
+      header: "Actions"
     })
   ];
 
@@ -250,24 +275,10 @@ export default function Home() {
         <Navigation />
         <div>
           <EventForm />
-
-          {
-            events.map((event, i) => {
-              return (
-                <div key={i}>
-                  <h2>{event.name}</h2>
-                  <p>&emsp;Start: {dayjs(event.start).format("dddd, MMMM D, YYYY h:mm A")}</p>
-                  <p>&emsp;End: {dayjs(event.end).format("dddd, MMMM D, YYYY h:mm A")}</p>
-                  <p>&emsp;Location: {event.location}</p>
-                  <p>&emsp;Description: {event.description}</p>
-                </div>
-              )
-            })
-          }
         </div>
 
 
-        <DataTableChakra columns={columns} data={data} />
+        <DataTableChakra columns={columns} data={events} />
 
         <div>
 
