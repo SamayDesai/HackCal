@@ -1,5 +1,7 @@
 
+'use client'
 import { useState } from 'react'
+import FileUpload from '@/components/ui/file-upload';
 
 import {
   Progress,
@@ -29,193 +31,23 @@ const Form1 = () => {
   return (
     <>
       <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
-        Upload Your Picture!
+        Scan Your Picture!
       </Heading>
-      <Flex>
-        <FormControl mr="5%">
-          <FormLabel htmlFor="first-name" fontWeight={'normal'}>
-            First name
-          </FormLabel>
-          <Input id="first-name" placeholder="First name" />
-        </FormControl>
+      <FileUpload>
 
-        <FormControl>
-          <FormLabel htmlFor="last-name" fontWeight={'normal'}>
-            Last name
-          </FormLabel>
-          <Input id="last-name" placeholder="First name" />
-        </FormControl>
-      </Flex>
-      <FormControl mt="2%">
-        <FormLabel htmlFor="email" fontWeight={'normal'}>
-          Email address
-        </FormLabel>
-        <Input id="email" type="email" />
-        <FormHelperText>We&apos;ll never share your email.</FormHelperText>
-      </FormControl>
+      </FileUpload>
 
-      <FormControl>
-        <FormLabel htmlFor="password" fontWeight={'normal'} mt="2%">
-          Password
-        </FormLabel>
-        <InputGroup size="md">
-          <Input
-            pr="4.5rem"
-            type={show ? 'text' : 'password'}
-            placeholder="Enter password"
-          />
-          <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
-              {show ? 'Hide' : 'Show'}
-            </Button>
-          </InputRightElement>
-        </InputGroup>
-      </FormControl>
     </>
+
+
   )
 }
 
 const Form2 = () => {
   return (
     <>
-      <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
-        User Details
-      </Heading>
-      <FormControl as={GridItem} colSpan={[6, 3]}>
-        <FormLabel
-          htmlFor="country"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}>
-          Country / Region
-        </FormLabel>
-        <Select
-          id="country"
-          name="country"
-          autoComplete="country"
-          placeholder="Select option"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md">
-          <option>United States</option>
-          <option>Canada</option>
-          <option>Mexico</option>
-        </Select>
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={6}>
-        <FormLabel
-          htmlFor="street_address"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          Street address
-        </FormLabel>
-        <Input
-          type="text"
-          name="street_address"
-          id="street_address"
-          autoComplete="street-address"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 6, null, 2]}>
-        <FormLabel
-          htmlFor="city"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          City
-        </FormLabel>
-        <Input
-          type="text"
-          name="city"
-          id="city"
-          autoComplete="city"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 3, null, 2]}>
-        <FormLabel
-          htmlFor="state"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          State / Province
-        </FormLabel>
-        <Input
-          type="text"
-          name="state"
-          id="state"
-          autoComplete="state"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-
-      <FormControl as={GridItem} colSpan={[6, 3, null, 2]}>
-        <FormLabel
-          htmlFor="postal_code"
-          fontSize="sm"
-          fontWeight="md"
-          color="gray.700"
-          _dark={{
-            color: 'gray.50',
-          }}
-          mt="2%">
-          ZIP / Postal
-        </FormLabel>
-        <Input
-          type="text"
-          name="postal_code"
-          id="postal_code"
-          autoComplete="postal-code"
-          focusBorderColor="brand.400"
-          shadow="sm"
-          size="sm"
-          w="full"
-          rounded="md"
-        />
-      </FormControl>
-    </>
-  )
-}
-
-const Form3 = () => {
-  return (
-    <>
       <Heading w="100%" textAlign={'center'} fontWeight="normal">
-        Social Handles
+        Confirm Event Details
       </Heading>
       <SimpleGrid columns={1} spacing={6}>
         <FormControl as={GridItem} colSpan={[3, 2]}>
@@ -226,27 +58,30 @@ const Form3 = () => {
             _dark={{
               color: 'gray.50',
             }}>
-            Website
+            Event Name
           </FormLabel>
           <InputGroup size="sm">
-            <InputLeftAddon
-              bg="gray.50"
-              _dark={{
-                bg: 'gray.800',
-              }}
-              color="gray.500"
-              rounded="md">
-              http://
-            </InputLeftAddon>
             <Input
               type="tel"
-              placeholder="www.example.com"
+              placeholder="My Birthday Party!"
               focusBorderColor="brand.400"
               rounded="md"
             />
           </InputGroup>
         </FormControl>
+        <FormControl>
+          <FormLabel
+            fontSize="sm"
+            fontWeight="md"
+            color="gray.700"
+            _dark={{
+              color: 'gray.50',
+            }}>
+            Date and Time
+          </FormLabel>
 
+          {/* location and  */}
+        </FormControl>
         <FormControl id="email" mt={1}>
           <FormLabel
             fontSize="sm"
@@ -255,10 +90,10 @@ const Form3 = () => {
             _dark={{
               color: 'gray.50',
             }}>
-            About
+            Description
           </FormLabel>
           <Textarea
-            placeholder="you@example.com"
+            placeholder="I love HackCal!!!"
             rows={3}
             shadow="sm"
             focusBorderColor="brand.400"
@@ -267,7 +102,7 @@ const Form3 = () => {
             }}
           />
           <FormHelperText>
-            Brief description for your profile. URLs are hyperlinked.
+            Brief description for your event. URLs are hyperlinked.
           </FormHelperText>
         </FormControl>
       </SimpleGrid>
@@ -291,7 +126,7 @@ export default function EventForm() {
         m="10px auto"
         as="form">
         <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>
-        {step === 1 ? <Form1 /> : step === 2 ? <Form2 /> : <Form3 />}
+        {step === 1 ? <Form1 /> : step === 2 ? <Form2 /> : <Form2 />}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
             <Flex>
@@ -326,12 +161,12 @@ export default function EventForm() {
             {step === 3 ? (
               <Button
                 w="7rem"
-                colorScheme="red"
+                colorScheme="teal"
                 variant="solid"
                 onClick={() => {
                   toast({
-                    title: 'Account created.',
-                    description: "We've created your account for you.",
+                    title: 'Event Uploaded',
+                    description: "We've successfully uploaded your event!",
                     status: 'success',
                     duration: 3000,
                     isClosable: true,
