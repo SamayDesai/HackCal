@@ -1,8 +1,10 @@
 'use server'
 
-import { FirebaseOptions, initializeApp } from "firebase/app";
+import { FirebaseOptions } from "firebase/app";
+import firebase from "firebase/compat/app";
+import { getFirestore } from "firebase/firestore";
 
-export async function InitFirebase() {
+export async function InitFirestore() {
 
     const firebaseConfig: FirebaseOptions  = {
         apiKey: process.env["FIREBASE_API_KEY"],
@@ -14,5 +16,5 @@ export async function InitFirebase() {
         measurementId: process.env["FIREBASE_MEASUREMENT_ID"]
     }
 
-    return initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
 }
