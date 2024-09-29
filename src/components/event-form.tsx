@@ -30,22 +30,15 @@ const Form1 = () => {
   const handleClick = () => setShow(!show)
   return (
     <>
-    {/* <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
-      User Registration
-    </Heading>
-    <FormControl mt="2%">
-      <FormLabel htmlFor="email" fontWeight={'normal'}>
-        Email address
-      </FormLabel>
-      <Input id="email" type="email" />
-      <FormHelperText>We&apos;ll never share your email.</FormHelperText>
-    </FormControl> */}
-    <FileUpload>
-        
-    </FileUpload>
+      <Heading w="100%" textAlign={'center'} fontWeight="normal" mb="2%">
+        Scan Your Picture!
+      </Heading>
+      <FileUpload>
 
-  </>
-      
+      </FileUpload>
+
+    </>
+
 
   )
 }
@@ -54,7 +47,7 @@ const Form2 = () => {
   return (
     <>
       <Heading w="100%" textAlign={'center'} fontWeight="normal">
-        Social Handles
+        Confirm Event Details
       </Heading>
       <SimpleGrid columns={1} spacing={6}>
         <FormControl as={GridItem} colSpan={[3, 2]}>
@@ -65,27 +58,30 @@ const Form2 = () => {
             _dark={{
               color: 'gray.50',
             }}>
-            Website
+            Event Name
           </FormLabel>
           <InputGroup size="sm">
-            <InputLeftAddon
-              bg="gray.50"
-              _dark={{
-                bg: 'gray.800',
-              }}
-              color="gray.500"
-              rounded="md">
-              http://
-            </InputLeftAddon>
             <Input
               type="tel"
-              placeholder="www.example.com"
+              placeholder="My Birthday Party!"
               focusBorderColor="brand.400"
               rounded="md"
             />
           </InputGroup>
         </FormControl>
+        <FormControl>
+          <FormLabel
+            fontSize="sm"
+            fontWeight="md"
+            color="gray.700"
+            _dark={{
+              color: 'gray.50',
+            }}>
+            Date and Time
+          </FormLabel>
 
+          {/* location and  */}
+        </FormControl>
         <FormControl id="email" mt={1}>
           <FormLabel
             fontSize="sm"
@@ -94,10 +90,10 @@ const Form2 = () => {
             _dark={{
               color: 'gray.50',
             }}>
-            About
+            Description
           </FormLabel>
           <Textarea
-            placeholder="you@example.com"
+            placeholder="I love HackCal!!!"
             rows={3}
             shadow="sm"
             focusBorderColor="brand.400"
@@ -106,7 +102,7 @@ const Form2 = () => {
             }}
           />
           <FormHelperText>
-            Brief description for your profile. URLs are hyperlinked.
+            Brief description for your event. URLs are hyperlinked.
           </FormHelperText>
         </FormControl>
       </SimpleGrid>
@@ -165,7 +161,7 @@ export default function EventForm() {
             {step === 3 ? (
               <Button
                 w="7rem"
-                colorScheme="red"
+                colorScheme="teal"
                 variant="solid"
                 onClick={() => {
                   toast({
