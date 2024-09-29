@@ -11,6 +11,8 @@
   //imports here are for the Firebase SDK
   import { signInWithPopup, User } from "firebase/auth";
   import { auth, provider } from "./firebaseConfig"; // Import your Firebase configuration
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { Button } from "@chakra-ui/react";
 
   // TODO: Make backend API call to run OpenAI
 
@@ -36,18 +38,25 @@
     }, []) // TODO: Remove empty array param
 
     // firebase google login test 
-    const [user, setUser] = useState<User | null>(null);
+    // const [user, setUser] = useState<User | null>(null);
 
-    const login = async () => {
-      try {
-        const result = await signInWithPopup(auth, provider);
-        setUser(result.user);
-        console.log(result.user);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    // const login = async () => {
+    //   try {
+    //     const result = await signInWithPopup(auth, provider);
+    //     setUser(result.user);
+    //     console.log(result.user);
+    //   } catch (error) {
+    //     console.error(error);
+    //   }
+    // };
+
+    
     //firebase google login test end
+
+    const login = useGoogleLogin({
+      onSuccess: codeResponse => console.log(codeResponse),
+      flow: 'auth-code',
+    });
 
     return (
       <div>
@@ -70,13 +79,22 @@
         </div>
         <div>
 
-          //GOOGLE calendar and firebase integration content 
+          {/* //GOOGLE calendar and firebase integration content 
           <h1>Google Calendar Integration</h1>
           {user ? (
             <p>Welcome, {user.displayName}</p>
           ) : (
             <button onClick={login}>Login with Google</button>
-          )}
+          )} */}
+
+          <GoogleLogin
+            onSuccess={credentialResponse => {
+              console.log(credentialResponse);
+            }}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+          />
 
 
         </div>
