@@ -188,9 +188,6 @@ export default function Home() {
 
     const runDbStuff = async () => {
       if (db && userId) {
-        const eventsJson = await TestProcessImageRequest()
-        const events = parseEvents(eventsJson)
-        setEvents(events)
         GetAllForUser(db as Firestore, userId, setEvents)
 
         // for (let event of events) {
@@ -272,7 +269,7 @@ export default function Home() {
 
     return (
       <div>
-        <Navigation />
+        <Navigation loginFunc={login} />
         <div>
           <EventForm />
         </div>
@@ -280,12 +277,6 @@ export default function Home() {
 
         <DataTableChakra columns={columns} data={events} />
 
-        <div>
-
-          <Button onClick={login}>Login with Google</Button>
-
-
-        </div>
       </div>
     );
   }
