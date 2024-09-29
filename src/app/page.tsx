@@ -58,11 +58,11 @@ export default function Home() {
         const eventsJson = await TestProcessImageRequest()
         const events = parseEvents(eventsJson)
         setEvents(events)
+        GetAllForUser(db as Firestore, userId, setEvents)
 
-        for (let event of events) {
-          WriteNewEvent(db as Firestore, userId, event)
-        }
-      // GetAllForUser(db as Firestore, userId, setEvents)
+        // for (let event of events) {
+        //   WriteNewEvent(db as Firestore, userId, event)
+        // }
       }
     }
 
