@@ -7,6 +7,8 @@ import Image from "next/image";
 import { InitOpenAi, ProcessImageRequest, TestApiCall, TestProcessImageRequest } from "./openai";
 import Navigation from '@/components/navbar';
 import EventForm from '@/components/event-form';
+import { InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import FirebaseFirestore from "@google-cloud/firestore";
 
 // TODO: Make backend API call to run OpenAI
 
@@ -17,6 +19,7 @@ type Repo = {
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
 
+
   useEffect(() => {
     const getEvents = async () => {
     // let openai = await InitOpenAi()
@@ -25,7 +28,12 @@ export default function Home() {
     // let events = await TestProcessImageRequest()
 
       const eventsJson = await TestProcessImageRequest()
-      setEvents(parseEvents(eventsJson))
+      const events = parseEvents(eventsJson)
+      setEvents(events)
+
+      for (let event of events) {
+        await WriteNewEvent("1", event)
+      }
     }
 
     getEvents()
