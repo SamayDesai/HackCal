@@ -11,6 +11,7 @@ import { Button } from "@chakra-ui/react";
 import { Firestore } from "firebase/firestore";
 import { useGoogleLogin } from "@react-oauth/google";
 import dayjs from "dayjs";
+
 import { GetAllForUser, InitFirestore } from "./firebase/firestore";
 import { DataTable } from "./eventlist/components/data-table";
 // import { columns } from "./eventlist/components/columns"
@@ -26,6 +27,10 @@ import * as React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { DataTableChakra } from "./chakratabletester";
+
+import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import GetUserId from "./firebase/auth";
+
 
   // TODO: Make backend API call to run OpenAI
 
@@ -90,6 +95,7 @@ export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [db, setDb] = useState<Firestore>()
   const [authCode, setAuthCode] = useState<string>()
+  const [userId, setUserId] = useState<string>()
 
 //   const eventsJSON = [
 //     {
@@ -151,16 +157,40 @@ export default function Home() {
 
   useEffect(() => {
     console.log(db)
-    if (db) {
-      GetAllForUser(db as Firestore, "1", setEvents)
-    }
-  }, [db])
 
-  useEffect(() => {
+    const runDbStuff = async () => {
+      if (db && userId) {
+        const eventsJson = await TestProcessImageRequest()
+        const events = parseEvents(eventsJson)
+        setEvents(events)
+        GetAllForUser(db as Firestore, userId, setEvents)
+
+        // for (let event of events) {
+        //   WriteNewEvent(db as Firestore, userId, event)
+        // }
+      }
+    }
+
+    runDbStuff()
+  }, [db, userId])
+
 
     if (authCode) {
       console.log("Auth code received")
+
+  useEffect(() => {
+
+    const runAuthStuff = async () => {
+      if (authCode) {
+        console.log("Auth code received")
+
+        setUserId(await GetUserId(authCode))
+
+      }
+
     }
+
+    runAuthStuff()
 
   }, [authCode])
 
