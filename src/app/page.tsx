@@ -7,15 +7,17 @@ import Image from "next/image";
 import { InitOpenAi, ProcessImageRequest, TestApiCall, TestProcessImageRequest } from "./openai";
 import Navigation from '@/components/navbar';
 import EventForm from '@/components/event-form';
-import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import { Button } from "@chakra-ui/react";
 import { Firestore } from "firebase/firestore";
+import { useGoogleLogin } from "@react-oauth/google";
 import dayjs from "dayjs";
+import { GetAllForUser, InitFirestore } from "./firebase/firestore";
 
-// TODO: Make backend API call to run OpenAI
+  // TODO: Make backend API call to run OpenAI
 
-type Repo = {
-  events: Event[]
-}
+  type Repo = {
+    events: Event[]
+  }
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
@@ -52,39 +54,39 @@ export default function Home() {
     }
   }, [db])
 
-  return (
-    // <div>
-    //   <h1>HackCal!</h1>
+  const login = useGoogleLogin({
+      onSuccess: codeResponse => {
+        console.log(codeResponse.scope)
+      },
+      flow: 'auth-code',
+      scope: 'https://www.googleapis.com/auth/calendar'
+    });
+
+    return (
+      <div>
+        <Navigation />
+        <div>
+          <EventForm />
+          {
+            events.map((event, i) => {
+              return (
+                <div key={i}>
+                  <h2>{event.name}</h2>
+                  <p>&emsp;Start: {dayjs(event.start).format("dddd, MMMM D, YYYY h:mm A")}</p>
+                  <p>&emsp;End: {dayjs(event.end).format("dddd, MMMM D, YYYY h:mm A")}</p>
+                  <p>&emsp;Location: {event.location}</p>
+                  <p>&emsp;Description: {event.description}</p>
+                </div>
+              )
+            })
+          }
+        </div>
+        <div>
+
+          <Button onClick={login}>Login with Google</Button>
 
 
-    // </div>
-    <div>
-    <Navigation>
-
-
-    </Navigation>
-    <div>
-      <EventForm>
-
-        </EventForm>
-
-
-        {
-          events.map((event, i) => {
-            return (
-              <div key={i}>
-                <h2>{event.name}</h2>
-                <p>&emsp;Start: {dayjs(event.start).format("dddd, MMMM D, YYYY h:mm A")}</p>
-                <p>&emsp;End: {dayjs(event.end).format("dddd, MMMM D, YYYY h:mm A")}</p>
-                <p>&emsp;Location: {event.location}</p>
-                <p>&emsp;Description: {event.description}</p>
-              </div>
-            )
-          })
-        }
+        </div>
       </div>
-    </div>
-
-
-  );
-}
+    );
+  }
