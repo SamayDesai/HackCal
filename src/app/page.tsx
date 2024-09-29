@@ -22,6 +22,7 @@ import { GetAllForUser, InitFirestore } from "./firebase/firestore";
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [db, setDb] = useState<Firestore>()
+  const [authCode, setAuthCode] = useState<string>()
 
 
   useEffect(() => {
@@ -54,13 +55,28 @@ export default function Home() {
     }
   }, [db])
 
+  useEffect(() => {
+
+    if (authCode) {
+      console.log("Auth code received")
+
+
+
+    }
+
+  }, [authCode])
+
   const login = useGoogleLogin({
       onSuccess: codeResponse => {
-        console.log(codeResponse.scope)
+        setAuthCode(codeResponse.code)
       },
       flow: 'auth-code',
       scope: 'https://www.googleapis.com/auth/calendar'
     });
+
+  const getCalendar = async () => {
+
+  }
 
     return (
       <div>
