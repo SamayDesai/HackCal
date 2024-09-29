@@ -12,7 +12,6 @@ import { Firestore } from "firebase/firestore";
 import { useGoogleLogin } from "@react-oauth/google";
 import dayjs from "dayjs";
 
-import { GetAllForUser, InitFirestore } from "./firebase/firestore";
 import { DataTable } from "./eventlist/components/data-table";
 // import { columns } from "./eventlist/components/columns"
 import { UserNav } from "./eventlist/components/user-nav"
@@ -28,6 +27,10 @@ import { ChakraProvider } from "@chakra-ui/react";
 import { createColumnHelper } from "@tanstack/react-table";
 import { DataTableChakra } from "./chakratabletester";
 
+// import { GetAllForUser, InitFirestore } from "./firebase/firestore";
+import { date, datetimeRegex } from "zod";
+import { google } from "googleapis";
+import { OAuth2Client } from "google-auth-library";
 import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
 import GetUserId from "./firebase/auth";
 
@@ -43,7 +46,7 @@ import GetUserId from "./firebase/auth";
     toUnit: string;
     factor: number;
   };
-  
+
   const data: UnitConversion[] = [
     {
       fromUnit: "inches",
@@ -61,9 +64,9 @@ import GetUserId from "./firebase/auth";
       factor: 0.91444
     }
   ];
-  
+
   const columnHelper = createColumnHelper<UnitConversion>();
-  
+
   const columns = [
     columnHelper.accessor("fromUnit", {
       cell: (info) => info.getValue(),
@@ -81,7 +84,7 @@ import GetUserId from "./firebase/auth";
       }
     })
   ];
-  
+
   // export function App() {
   //   return (
   //     <ChakraProvider>
@@ -128,8 +131,8 @@ export default function Home() {
 //     }]
 
 
-  // useEffect(() => {
-  //   setDb(InitFirestore())
+  useEffect(() => {
+    setDb(InitFirestore())
 
   //   return (
   //   <DataTableDemo></DataTableDemo>
@@ -153,7 +156,7 @@ export default function Home() {
   //   // }
   //   getEvents()
 
-  // }, []) // TODO: Remove empty array param
+  }, []) // TODO: Remove empty array param
 
   useEffect(() => {
     console.log(db)
@@ -174,25 +177,65 @@ export default function Home() {
     runDbStuff()
   }, [db, userId])
 
+  // const insertEvent = async () => {
 
-    if (authCode) {
-      console.log("Auth code received")
+  //   var event = {
+  //     summary:
+  //     location:
+  //     description:
+  //     start: {
+  //       dateTime:
+  //       timeZone:
+  //     }
+  //     end: {
+  //       datetime:
+  //       timeZone:
+  //     }
+  //  OPTION A:
+  //  try {
+  //     const response = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+  //       method: 'POST',
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(event),
+  //     });
 
-  useEffect(() => {
+  //     const data = await response.json();
+  //     console.log('Event created: ', data);
+  //   } catch (error) {
+  //     console.error('Error creating event: ', error);
+  //   }
 
-    const runAuthStuff = async () => {
-      if (authCode) {
-        console.log("Auth code received")
+  // OPTION B:
+  // calendar.events.insert({
+  //   auth: auth,
+  //   calendarId: 'primary',
+  //   resource: event
+  // }, function(err, event) {
+  //   if (err) {
+  //     console.log('There was an error contacting the Calendar service: ' + err);
+  //     return;
+  //   }
+  //   console.log('Event created: %s', event.htmlLink);
+  // });
+  // }
 
-        setUserId(await GetUserId(authCode))
+    useEffect(() => {
 
+      const runAuthStuff = async () => {
+        if (authCode) {
+          console.log("Auth code received")
+
+          setUserId(await GetUserId(authCode))
+
+        }
       }
 
-    }
+      runAuthStuff()
 
-    runAuthStuff()
-
-  }, [authCode])
+    }, [authCode])
 
   const login = useGoogleLogin({
       onSuccess: codeResponse => {
@@ -201,11 +244,6 @@ export default function Home() {
       flow: 'auth-code',
       scope: 'https://www.googleapis.com/auth/calendar'
     });
-
-  const getCalendar = async () => {
-
-  }
-
 
     return (
       <div>
@@ -245,15 +283,15 @@ export default function Home() {
   //   const data = await fs.readFile(
   //     path.join(process.cwd(), "app/eventlist/components/data/tasks.json")
   //   )
-  
+
   //   const tasks = JSON.parse(data.toString())
-  
+
   //   return z.array(taskSchema).parse(tasks)
   // }
-  
+
   // export async function TaskPage() {
   //   const tasks = await getTasks()
-  
+
   //   return (
   //     <>
   //       {/* <div className="md:hidden">
@@ -285,7 +323,7 @@ export default function Home() {
   //           </div>
   //         </div> */}
 
-  //       {/* <div> 
+  //       {/* <div>
   //         <DataTable data={tasks} columns={columns} />
   //       </div>
   //     </> */}

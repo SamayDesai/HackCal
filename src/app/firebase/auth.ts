@@ -22,6 +22,7 @@ export default async function GetUserId(auth_code: string) {
     })
 
     const tokenJson = await response.json()
+    console.log(tokenJson)
     const jwtDecoded = jwtDecode(tokenJson.id_token)
 
     return jwtDecoded.sub
