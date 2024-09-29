@@ -7,8 +7,8 @@ import Image from "next/image";
 import { InitOpenAi, ProcessImageRequest, TestApiCall, TestProcessImageRequest } from "./openai";
 import Navigation from '@/components/navbar';
 import EventForm from '@/components/event-form';
-import { InitFirestore, WriteNewEvent } from "./firebase/firestore";
-import FirebaseFirestore from "@google-cloud/firestore";
+import { GetAllForUser, InitFirestore, WriteNewEvent } from "./firebase/firestore";
+import { Firestore } from "firebase/firestore";
 
 // TODO: Make backend API call to run OpenAI
 
@@ -18,25 +18,32 @@ type Repo = {
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
+  const [db, setDb] = useState<Firestore>()
 
 
   useEffect(() => {
-    const getEvents = async () => {
+    setDb(InitFirestore())
+    while (!db) {}
+    GetAllForUser(db as Firestore, "1", setEvents)
+    console.log("Events", events)
+
+    // const getEvents = async () => {
     // let openai = await InitOpenAi()
     // let test_call = await TestApiCall(openai)
     // let info = await ProcessImageRequest(openai, `./public/examples/Image from i.pinimg.com.jpg`);
     // let events = await TestProcessImageRequest()
 
-      const eventsJson = await TestProcessImageRequest()
-      const events = parseEvents(eventsJson)
-      setEvents(events)
+      // const eventsJson = await TestProcessImageRequest()
+      // const events = parseEvents(eventsJson)
+      // setEvents(events)
 
-      for (let event of events) {
-        await WriteNewEvent("1", event)
-      }
-    }
+      // for (let event of events) {
+      //   await WriteNewEvent("1", event)
+      // }
 
-    getEvents()
+    // }
+    // getEvents()
+
   }, []) // TODO: Remove empty array param
 
   return (

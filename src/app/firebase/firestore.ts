@@ -1,15 +1,13 @@
-'use server'
-
 import { FirebaseOptions } from "firebase/app";
 import firebase from "firebase/compat/app";
-import { addDoc, collection, getFirestore } from "firebase/firestore";
+import { addDoc, collection, Firestore, getFirestore, onSnapshot, query, where } from "firebase/firestore";
 import dayjs, { Dayjs } from "dayjs";
 import timezone from "dayjs/plugin/timezone";
 import utc from 'dayjs/plugin/utc'
 
 import { Event } from "../models"
 
-export async function InitFirestore() {
+export function InitFirestore() {
 
     const firebaseConfig: FirebaseOptions  = {
         apiKey: process.env["FIREBASE_API_KEY"],
@@ -28,13 +26,12 @@ export async function InitFirestore() {
 
 }
 
-export async function WriteNewEvent(user_id: string, event: Event) {
+export function WriteNewEvent(db: Firestore, user_id: string, event: Event) {
 
-    const db = await InitFirestore()
     dayjs.extend(timezone)
     dayjs.extend(utc)
 
-    await addDoc(collection(db, `users/${user_id}/events/`), {
+    addDoc(collection(db, `users/${user_id}/events/`), {
         name: event.name,
         start: dayjs(event.start).format(),
         end: dayjs(event.end).format(),
@@ -45,13 +42,17 @@ export async function WriteNewEvent(user_id: string, event: Event) {
 
 }
 
-// export async function TestGetAll() {
+export function GetAllForUser(db: Firestore, user_id: string, setEvents: (events: Event[]) => void) {
+    onSnapshot(collection(db, `users/${user_id}/events/`), (snapshot) => {
+        const events: Event[] = []
+        const eventsSnapshot = snapshot.docs.sort((a, b) => {
+            return dayjs(b.get("createdAt")).unix() - dayjs(a.get("createdAt")).unix()
+        })
+        for (const event of eventsSnapshot) {
+            events.push(event.data() as Event)
+        }
+        setEvents(events)
+    })
 
-//     const db = await InitFirestore()
 
-//     db.collection("cities").doc("SF")
-//         .onSnapshot((doc) => {
-
-//         });
-
-// }
+}
