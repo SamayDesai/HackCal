@@ -69,12 +69,16 @@
           }
         </div>
         <div>
+
+          //GOOGLE calendar and firebase integration content 
           <h1>Google Calendar Integration</h1>
           {user ? (
             <p>Welcome, {user.displayName}</p>
           ) : (
             <button onClick={login}>Login with Google</button>
           )}
+
+
         </div>
       </div>
     );

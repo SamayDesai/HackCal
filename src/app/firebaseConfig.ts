@@ -1,3 +1,7 @@
+/**
+ * @fileoverview related to firebase-google login integration.
+ * This configures the firebase-side keys and initializes firebase in the context of the app.
+ */
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 

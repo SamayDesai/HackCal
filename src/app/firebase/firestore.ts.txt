@@ -1,9 +1,11 @@
+//unused. suggest delete
 'use server'
 
-import { FirebaseOptions } from "firebase/app"
+import { FirebaseOptions } from "firebase/app";
 import firebase from "firebase/compat/app";
+import { getFirestore } from "firebase/firestore";
 
-export default function InitFirebaseAuth() {
+export async function InitFirestore() {
 
     const firebaseConfig: FirebaseOptions  = {
         apiKey: process.env["FIREBASE_API_KEY"],
@@ -16,5 +18,4 @@ export default function InitFirebaseAuth() {
     }
 
     firebase.initializeApp(firebaseConfig);
-    return firebase.auth()
 }

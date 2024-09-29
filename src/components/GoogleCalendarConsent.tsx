@@ -1,3 +1,7 @@
+/**
+ * @fileoverview related to firebase-google login integration.
+ * This file primarily concerns google integration, popup management, and google login. 
+ */
 import { useEffect } from "react";
 import { google } from "googleapis"; // OR https://accounts.google.com/gsi/client
 

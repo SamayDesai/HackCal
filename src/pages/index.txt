@@ -1,3 +1,6 @@
+/**
+* this file has already been integrated into page.tsx, but its purpose is to create login button. 
+*/
 //imports here are for the Firebase SDK
 import { useState } from "react";
 import { signInWithPopup, User } from "firebase/auth";
