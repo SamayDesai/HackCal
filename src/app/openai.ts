@@ -4,12 +4,6 @@ import OpenAI from "openai"
 import { promises as fs } from 'fs';
 import { Event, parseEvents } from "./models";
 
-export async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
-    let openai = await InitOpenAi()
-    let newEvents = await ProcessImageRequest(openai, file)
-    setEvents(newEvents.concat(events))
-}
-
 export async function InitOpenAi() {
     return new OpenAI({
         apiKey: process.env["OPENAI_API_KEY"]
