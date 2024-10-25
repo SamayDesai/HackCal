@@ -50,22 +50,38 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
     factor: number;
   };
 
-  const data: UnitConversion[] = [
+  const data: Event[] = [
     {
-      fromUnit: "inches",
-      toUnit: "millimetres (mm)",
-      factor: 25.4
+      name: "Birthday Party",
+      start: dayjs("2023-12-25T10:30:00Z"),
+      end: dayjs("2023-12-25T10:32:00Z"),
+      location: "Kyle's House",
+      description: "Kyle's 10th birthday party!!"
+      
     },
     {
-      fromUnit: "feet",
-      toUnit: "centimetres (cm)",
-      factor: 30.48
+      name: "Assignment Due for Class",
+      start: dayjs("2024-11-25T10:30:00Z"),
+      end: dayjs("2024-11-25T10:30:00Z"),
+      location: "",
+      description: "Assigment for Computer Science"
+      
     },
     {
-      fromUnit: "yards",
-      toUnit: "metres (m)",
-      factor: 0.91444
-    }
+      name: "Grandmother's House",
+      start: dayjs("2025-10-28T10:30:00Z"),
+      end: dayjs("2025-10-31T10:30:00Z"),
+      location: "Grandmother's House",
+      description: ""
+      
+    },
+    // {
+    //   name: "Hi",
+    //   start: dayjs("2023-12-25T10:30:00Z"),
+    //   end: dayjs("2023-12-25T10:30:00Z"),
+    //   location: "Potato",
+    //   description: "Tomato"
+    // }
   ];
 
   const columnHelper = createColumnHelper<Event>();
@@ -110,6 +126,8 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
     })
   ];
 
+  
+
   // export function App() {
   //   return (
   //     <ChakraProvider>
@@ -136,6 +154,11 @@ export default function Home() {
 //       "label": "documentation",
 //       "priority": "medium"
 //     },
+// name: string,
+//     start: Dayjs,
+//     end: Dayjs,
+//     location: string,
+//     description: string
 //     {
 //       "id": "TASK-7878",
 //       "title": "Try to calculate the EXE feed, maybe it will index the multi-byte pixel!",
@@ -244,7 +267,7 @@ export default function Home() {
         </div>
 
 
-        <DataTableChakra columns={columns} data={events} />
+        <DataTableChakra columns={columns} data={data} />
 
       </div>
     );

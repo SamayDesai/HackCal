@@ -61,7 +61,7 @@ const Navigation = ({ loginFunc }: { loginFunc: () => void }) => {
           <HStack spacing={8} alignItems={'center'}>
             <Box>
                 <Button>
-                    HackCal
+                    PictoCal
                 </Button>
             </Box>
             <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
