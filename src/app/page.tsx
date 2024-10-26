@@ -57,7 +57,6 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
       end: dayjs("2023-12-25T10:32:00Z"),
       location: "Kyle's House",
       description: "Kyle's 10th birthday party!!"
-      
     },
     {
       name: "Assignment Due for Class",
@@ -65,7 +64,6 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
       end: dayjs("2024-11-25T10:30:00Z"),
       location: "",
       description: "Assigment for Computer Science"
-      
     },
     {
       name: "Grandmother's House",
@@ -73,15 +71,7 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
       end: dayjs("2025-10-31T10:30:00Z"),
       location: "Grandmother's House",
       description: ""
-      
     },
-    // {
-    //   name: "Hi",
-    //   start: dayjs("2023-12-25T10:30:00Z"),
-    //   end: dayjs("2023-12-25T10:30:00Z"),
-    //   location: "Potato",
-    //   description: "Tomato"
-    // }
   ];
 
   const columnHelper = createColumnHelper<Event>();
@@ -119,6 +109,7 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
           endDate={dayjs(info.row.original.end).format("YYYY-MM-DD")}
           startTime={dayjs(info.row.original.start).format("HH:mm")}
           endTime={dayjs(info.row.original.end).format("HH:mm")}
+          description={info.row.original.description}
           timeZone="America/New_York"
         ></AddToCalendarButton>
       ),
@@ -126,23 +117,13 @@ import { AddToCalendarButton } from "add-to-calendar-button-react"
     })
   ];
 
-  
-
-  // export function App() {
-  //   return (
-  //     <ChakraProvider>
-  //       <DataTableChakra columns={columns} data={data} />
-  //     </ChakraProvider>
-  //   );
-  // }
-
-
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([])
   const [db, setDb] = useState<Firestore>()
   const [authCode, setAuthCode] = useState<string>()
   const [userId, setUserId] = useState<string>()
   const [isEventsUpdated, setIsEventsUpdated] = useState<boolean>(false)
+  const [userEmail, setUserEmail] = useState<string>();
 
   const prevEvents = React.useRef<Event[]>([])
 
@@ -241,9 +222,9 @@ export default function Home() {
       const runAuthStuff = async () => {
         if (authCode) {
           console.log("Auth code received")
-
-          setUserId(await GetUserId(authCode))
-
+          const { userId, email } = await GetUserId(authCode)
+          setUserId(userId)
+          setUserEmail(email)
         }
       }
 
@@ -256,21 +237,22 @@ export default function Home() {
         setAuthCode(codeResponse.code)
       },
       flow: 'auth-code',
-      scope: 'https://www.googleapis.com/auth/calendar'
+      scope: 'openid email profile https://www.googleapis.com/auth/calendar'
     });
 
     return (
       <div>
-        <Navigation loginFunc={login} />
+        <Navigation loginFunc={login} userEmail={userEmail} userId={userId} />
         <div>
-          <EventForm events={events} setEvents={setEvents} setIsEventsUpdated={setIsEventsUpdated} />
+          <EventForm
+            events={events}
+            setEvents={setEvents}
+            setIsEventsUpdated={setIsEventsUpdated}
+          />
         </div>
-
-
         <DataTableChakra columns={columns} data={data} />
-
       </div>
-    );
+    )
   }
 
   // async function getTasks() {

@@ -44,7 +44,73 @@ const NavLink = (props: Props) => {
   )
 }
 
-const Navigation = ({ loginFunc }: { loginFunc: () => void }) => {
+// const Navigation = ({ loginFunc }: { loginFunc: () => void }) => {
+//   const { isOpen, onOpen, onClose } = useDisclosure()
+
+//   return (
+//     <>
+//       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+//         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+//           <IconButton
+//             size={'md'}
+//             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+//             aria-label={'Open Menu'}
+//             display={{ md: 'none' }}
+//             onClick={isOpen ? onClose : onOpen}
+//           />
+//           <HStack spacing={8} alignItems={'center'}>
+//             <Box>
+//                 <Button>
+//                     PictoCal
+//                 </Button>
+//             </Box>
+//             <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
+//               {Links.map((link) => (
+//                 <NavLink key={link}>
+//                     {link}</NavLink>
+//               ))}
+//             </HStack>
+//           </HStack>
+//           <Flex alignItems={'center'}>
+//             <Menu>
+//               <MenuButton
+//                 as={Button}
+//                 rounded={'full'}
+//                 variant={'link'}
+//                 cursor={'pointer'}
+//                 minW={0}
+//                 onClick={loginFunc}>
+//                 Login with Google
+//               </MenuButton>
+//             </Menu>
+//           </Flex>
+//         </Flex>
+
+//         {isOpen ? (
+//           <Box pb={4} display={{ md: 'none' }}>
+//             <Stack as={'nav'} spacing={4}>
+//               {Links.map((link) => (
+//                 <NavLink key={link}>{link}</NavLink>
+//               ))}
+//             </Stack>
+//           </Box>
+//         ) : null}
+//       </Box>
+
+
+//     </>
+//   )
+// }
+
+// export default Navigation
+
+interface NavigationProps {
+  loginFunc: () => void;
+  userEmail: string | undefined;
+  userId: string | undefined;
+}
+
+const Navigation = ({ loginFunc, userEmail, userId }: NavigationProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   return (
@@ -60,29 +126,32 @@ const Navigation = ({ loginFunc }: { loginFunc: () => void }) => {
           />
           <HStack spacing={8} alignItems={'center'}>
             <Box>
-                <Button>
-                    PictoCal
-                </Button>
+              <Button>PictoCal</Button>
             </Box>
-            <HStack as={'nav'} spacing={4} display={{ base: 'none', md: 'flex' }}>
+            <HStack
+              as={'nav'}
+              spacing={4}
+              display={{ base: 'none', md: 'flex' }}>
               {Links.map((link) => (
-                <NavLink key={link}>
-                    {link}</NavLink>
+                <NavLink key={link}>{link}</NavLink>
               ))}
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
-            <Menu>
-              <MenuButton
-                as={Button}
+            {userId ? (
+              <Button variant={'solid'} colorScheme={'teal'} size={'sm'} mr={4}>
+                Logged in as: {userEmail}
+              </Button>
+            ) : (
+              <Button
                 rounded={'full'}
                 variant={'link'}
                 cursor={'pointer'}
                 minW={0}
                 onClick={loginFunc}>
                 Login with Google
-              </MenuButton>
-            </Menu>
+              </Button>
+            )}
           </Flex>
         </Flex>
 
@@ -96,8 +165,6 @@ const Navigation = ({ loginFunc }: { loginFunc: () => void }) => {
           </Box>
         ) : null}
       </Box>
-
-
     </>
   )
 }
