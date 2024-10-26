@@ -24,7 +24,7 @@ interface Props {
   children: React.ReactNode
 }
 
-const Links = ['Dashboard', 'Event List']
+// const Links = ['Dashboard', 'Events List']
 
 const NavLink = (props: Props) => {
   const { children } = props
@@ -132,9 +132,9 @@ const Navigation = ({ loginFunc, userEmail, userId }: NavigationProps) => {
               as={'nav'}
               spacing={4}
               display={{ base: 'none', md: 'flex' }}>
-              {Links.map((link) => (
+              {/* {Links.map((link) => (
                 <NavLink key={link}>{link}</NavLink>
-              ))}
+              ))} */}
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
@@ -158,9 +158,9 @@ const Navigation = ({ loginFunc, userEmail, userId }: NavigationProps) => {
         {isOpen ? (
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
-              {Links.map((link) => (
+              {/* {Links.map((link) => (
                 <NavLink key={link}>{link}</NavLink>
-              ))}
+              ))} */}
             </Stack>
           </Box>
         ) : null}

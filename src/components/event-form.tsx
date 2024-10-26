@@ -1,8 +1,9 @@
 
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import FileUpload from '@/components/ui/file-upload';
 import DatetimePickerHourCycle from './ui/date-time';
+import dayjs, { Dayjs } from 'dayjs';
 
 import {
   Progress,
@@ -15,18 +16,16 @@ import {
   GridItem,
   FormLabel,
   Input,
-  Select,
   SimpleGrid,
-  InputLeftAddon,
-  InputGroup,
   Textarea,
-  FormHelperText,
-  InputRightElement,
 } from '@chakra-ui/react'
 
 import { useToast } from '@chakra-ui/react'
 import { InitOpenAi, ProcessImageRequest } from '@/app/openai';
 import { Event } from '@/app/models';
+import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
+import { addDoc, collection, Firestore } from 'firebase/firestore';
+import { userAgent } from 'next/server';
 
 async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
     let openai = await InitOpenAi()
@@ -34,6 +33,7 @@ async function ProcessImage(file: string, events: Event[], setEvents: (events: E
     setEvents(newEvents.concat(events))
     return ""
 }
+
 
 
 const Form1 = ({ file, setFile }: any) => {
@@ -54,7 +54,13 @@ const Form1 = ({ file, setFile }: any) => {
   )
 }
 
-const Form2 = () => {
+const Form2 = ({
+  eventName, setEventName,
+  eventLocation, setEventLocation,
+  startDate, setStartDate,
+  endDate, setEndDate,
+  description, setDescription
+}: any) => {
   return (
     <>
       <Heading w="100%" textAlign={'center'} fontWeight="normal">
@@ -62,106 +68,59 @@ const Form2 = () => {
       </Heading>
       <SimpleGrid columns={1} spacing={6}>
         <FormControl as={GridItem} colSpan={[2, 2]}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50',
-            }}>
-            Event Name
-          </FormLabel>
-          <InputGroup size="sm">
-            <Input
-              type="tel"
-              placeholder="My Birthday Party!"
-              focusBorderColor="brand.400"
-              rounded="md"
-            />
-          </InputGroup>
-        </FormControl>
-        <FormControl as={GridItem} colSpan={[2, 2]}>
-
-          <div className="flex flex-col gap-3 lg:flex-row">
-            <div className="flex w-72 flex-col">
-              <FormLabel
-                fontSize="sm"
-                fontWeight="md"
-                color="gray.700"
-                _dark={{
-                  color: 'gray.50',
-                }}>Start Date</FormLabel>
-              <DatetimePickerHourCycle>
-
-              </DatetimePickerHourCycle>
-            </div>
-            <div className="flex w-72 flex-col">
-              <FormLabel
-                fontSize="sm"
-                fontWeight="md"
-                color="gray.700"
-                _dark={{
-                  color: 'gray.50',
-                }}>End Date</FormLabel>
-              <DatetimePickerHourCycle>
-
-              </DatetimePickerHourCycle>
-            </div>
-          </div>
-
-          {/* location and  */}
-          <FormControl as={GridItem} colSpan={[2, 2]} paddingTop={5}>
-            <FormLabel
-              fontSize="sm"
-              fontWeight="md"
-              color="gray.700"
-              _dark={{
-                color: 'gray.50',
-              }}>
-              Event Location
-            </FormLabel>
-            <InputGroup size="sm">
-              <Input
-                type="tel"
-                placeholder="Mickey Mouse's Club House!!"
-                focusBorderColor="brand.400"
-                rounded="md"
-              />
-            </InputGroup>
-          </FormControl>
-        </FormControl>
-
-        <FormControl as={GridItem} colSpan={[2, 2]}>
-          <FormLabel
-            fontSize="sm"
-            fontWeight="md"
-            color="gray.700"
-            _dark={{
-              color: 'gray.50',
-            }}>
-            Description
-          </FormLabel>
-          <Textarea
-            placeholder="I love HackCal!!!"
-            rows={3}
-            shadow="sm"
-            focusBorderColor="brand.400"
-            fontSize={{
-              sm: 'sm',
-            }}
+          <FormLabel>Event Name</FormLabel>
+          <Input
+            type="text"
+            placeholder="My Birthday Party!"
+            value={eventName}
+            onChange={(e) => setEventName(e.target.value)}
           />
         </FormControl>
-
+        <FormControl as={GridItem} colSpan={[2, 2]}>
+          <FormLabel>Event Location</FormLabel>
+          <Input
+            type="text"
+            placeholder="Location"
+            value={eventLocation}
+            onChange={(e) => setEventLocation(e.target.value)}
+          />
+        </FormControl>
+        <DatetimePickerHourCycle
+          selectedDate={startDate}
+          onDateChange={setStartDate}
+        />
+        <DatetimePickerHourCycle
+          selectedDate={endDate}
+          onDateChange={setEndDate}
+        />
+        <FormControl as={GridItem} colSpan={[2, 2]}>
+          <FormLabel>Description</FormLabel>
+          <Textarea
+            placeholder="Event description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </FormControl>
       </SimpleGrid>
     </>
-  )
+  );
 }
 
-export default function EventForm({ events, setEvents, setIsEventsUpdated }: any) {
+export default function EventForm({ events, setEvents, setIsEventsUpdated, userId }: any) {
   const toast = useToast()
   const [step, setStep] = useState(1)
   const [progress, setProgress] = useState(50)
   const [file, setFile] = useState("")
+  const [db, setDb] = useState<Firestore>();
+  const [eventName, setEventName] = useState("");
+  const [eventLocation, setEventLocation] = useState("");
+  const [startDate, setStartDate] = useState<Dayjs>(dayjs());
+  const [endDate, setEndDate] = useState<Dayjs>(dayjs());
+  const [description, setDescription] = useState("");
+  useEffect(() => {
+    setDb(InitFirestore())
+  }, []) // TODO: Remove empty array param
+
 
   const handleClick = async () => {
                   if (file !== "") {
@@ -188,7 +147,22 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated }: any
         m="10px auto"
         as="form">
         <Progress hasStripe value={progress} mb="5%" mx="5%" isAnimated></Progress>
-        {step === 1 ? <Form1 file={file} setFile={setFile} /> : step === 2 ? <Form2 /> : <Form2 />}
+        {step === 1 ? (
+          <Form1 file={file} setFile={setFile} />
+        ) : (
+          <Form2
+            eventName={eventName}
+            setEventName={setEventName}
+            eventLocation={eventLocation}
+            setEventLocation={setEventLocation}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            description={description}
+            setDescription={setDescription}
+          />
+        )}
         <ButtonGroup mt="5%" w="100%">
           <Flex w="100%" justifyContent="space-between">
             <Flex>
@@ -218,15 +192,40 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated }: any
                 w="7rem"
                 colorScheme="teal"
                 variant="solid"
-                onClick={() => {
-                  toast({
-                    title: 'Event Uploaded',
-                    description: "We've successfully uploaded your event!",
-                    status: 'success',
-                    duration: 3000,
-                    isClosable: true,
-                  })
-                }}>
+                onClick={async () => {
+                  const newEvent = {
+                    name: eventName,
+                    location: eventLocation,
+                    start: startDate,
+                    end: endDate,
+                    description: description,
+                  };
+
+                  if (db && userId) {
+                    const user = `${userId}`;
+                    WriteNewEvent(db, user, newEvent);
+                    console.log(userId);
+                    setEvents([...events, newEvent]);
+                    setIsEventsUpdated(true);
+              
+                    toast({
+                      title: 'Event Uploaded',
+                      description: "We've successfully uploaded your event!",
+                      status: 'success',
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                  } else {
+                    toast({
+                      title: 'Event Not Uploaded',
+                      description: "Please log in to upload an event!",
+                      status: "error",
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                  }
+                }}
+              >
                 Submit
               </Button>
             ) : null}
