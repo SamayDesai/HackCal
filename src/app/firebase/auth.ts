@@ -25,6 +25,7 @@ export default async function GetUserInfo(auth_code: string) {
 
   const tokenJson = await response.json();
   console.log(tokenJson);
+  console.log('tokenid:' + tokenJson.id_token);
 
   const jwtDecoded = jwtDecode<UpdatedPayload>(tokenJson.id_token);
 

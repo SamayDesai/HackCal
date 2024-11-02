@@ -58,8 +58,6 @@ export function GetAllForUser(db: Firestore, user_id: string, setEvents: (events
         console.log(events)
         setEvents(events)
     }, (error) => console.log(error.cause))
-
-
 }
 
 export function DeleteAllForUser(db: Firestore, user_id: string) {

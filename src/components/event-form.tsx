@@ -24,7 +24,7 @@ import { useToast } from '@chakra-ui/react'
 import { InitOpenAi, ProcessImageRequest } from '@/app/openai';
 import { Event } from '@/app/models';
 import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
-import { addDoc, collection, Firestore } from 'firebase/firestore';
+import { addDoc, collection, Firestore, getDocs, query, where } from 'firebase/firestore';
 import { userAgent } from 'next/server';
 
 async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
@@ -201,24 +201,47 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
                     description: description,
                   };
 
-                  if (db && userId) {
-                    const user = `${userId}`;
-                    WriteNewEvent(db, user, newEvent);
-                    console.log(userId);
-                    setEvents([...events, newEvent]);
-                    setIsEventsUpdated(true);
-              
-                    toast({
-                      title: 'Event Uploaded',
-                      description: "We've successfully uploaded your event!",
-                      status: 'success',
-                      duration: 3000,
-                      isClosable: true,
-                    });
-                  } else {
+                  if (db && userId && eventName) {
+                    const eventsRef = collection(db, "users", userId, "events");
+                    const q = query(eventsRef, where("name", "==", eventName));
+                    const querySnapshot = await getDocs(q);
+                    if (querySnapshot.empty) {
+                      const user = `${userId}`;
+                      WriteNewEvent(db, user, newEvent);
+                      console.log(userId);
+                      setEvents([...events, newEvent]);
+                      setIsEventsUpdated(true);
+                
+                      toast({
+                        title: 'Event Uploaded',
+                        description: "We've successfully uploaded your event!",
+                        status: 'success',
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    }
+                    else {
+                      toast({
+                        title: 'Event Not Uploaded',
+                        description: "You already have an event with that name!",
+                        status: 'error',
+                        duration: 3000,
+                        isClosable: true,
+                      });
+                    }
+                  } else if (userId === undefined) {
                     toast({
                       title: 'Event Not Uploaded',
                       description: "Please log in to upload an event!",
+                      status: "error",
+                      duration: 3000,
+                      isClosable: true,
+                    });
+                  }
+                  else if (eventName === "") {
+                    toast({
+                      title: 'Event Not Uploaded',
+                      description: "Please give your event a name!",
                       status: "error",
                       duration: 3000,
                       isClosable: true,
