@@ -26,14 +26,6 @@ import { useToast } from '@chakra-ui/react'
 import { Event } from '@/app/models';
 import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
 import { addDoc, collection, Firestore, getDocs, query, where } from 'firebase/firestore';
-// import { userAgent } from 'next/server';
-
-// export async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
-//   'use server'
-//   let openai = await InitOpenAi()
-//   let newEvents = await ProcessImageRequest(openai, file)
-//   setEvents(newEvents.concat(events))
-// }
 
 async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
   try {
@@ -54,7 +46,6 @@ async function ProcessImage(file: string, events: Event[], setEvents: (events: E
     setEvents([...events, ...newEvents]);
   } catch (error) {
     console.error(error);
-    // Handle error (e.g., show a toast notification)
   }
 }
 
@@ -110,10 +101,12 @@ const Form2 = ({
         <DatetimePickerHourCycle
           selectedDate={startDate}
           onDateChange={setStartDate}
+          time="start"
         />
         <DatetimePickerHourCycle
           selectedDate={endDate}
           onDateChange={setEndDate}
+          time="end"
         />
         <FormControl as={GridItem} colSpan={[2, 2]}>
           <FormLabel>Description</FormLabel>
@@ -145,19 +138,27 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
 
 
   const handleClick = async () => {
-                  console.log('hi1') 
-                  if (file !== "") {
-                    setStep(step + 1)
-                    if (step === 3) {
-                      setProgress(100)
-                    } else {
-                      setProgress(progress + 50)
-                    }
-                    console.log('hi')
-                    await ProcessImage(file, events, setEvents)
-                    console.log('hi2')
-                    setIsEventsUpdated(true)
-                  }
+    if (userId) {
+      if (file !== "") {
+        setStep(step + 1)
+        if (step === 3) {
+          setProgress(100)
+        } else {
+          setProgress(progress + 50)
+        }
+        await ProcessImage(file, events, setEvents)
+        setIsEventsUpdated(true)
+      }
+    }
+    else {
+      toast({
+        title: 'Please log in!',
+        description: "You must log in before uploading a picture.",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   }
 
   return (

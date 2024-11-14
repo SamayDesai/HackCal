@@ -641,6 +641,7 @@ type DateTimePickerProps = {
    **/
   granularity?: Granularity;
   className?: string;
+  popoverContentClassName?: string;
 } & Pick<CalendarProps, 'locale' | 'weekStartsOn' | 'showWeekNumber' | 'showOutsideDays'>;
 
 type DateTimePickerRef = {
@@ -660,6 +661,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
       granularity = 'second',
       placeholder = 'Pick a date',
       className,
+      popoverContentClassName,
       ...props
     },
     ref,
@@ -735,7 +737,7 @@ const DateTimePicker = React.forwardRef<Partial<DateTimePickerRef>, DateTimePick
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0">
+        <PopoverContent className={cn('w-auto p-0', popoverContentClassName)}>
           <Calendar
             mode="single"
             selected={value}

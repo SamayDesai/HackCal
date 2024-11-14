@@ -16,12 +16,24 @@ import GetUserId from "./firebase/auth";
 
 import { AddToCalendarButton } from "add-to-calendar-button-react"
 import { DeleteIcon } from "@chakra-ui/icons";
-import { InitOpenAi, TestApiCall, ProcessImageRequest, TestProcessImageRequest } from "./openai";
-
+import { Button } from "@chakra-ui/react";
+import EventDetailsModal from "./eventdetailsmodal";
 
 
 export default function Home() {
   const columnHelper = createColumnHelper<Event>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+
+  const openModal = (event: Event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedEvent(null);
+    setIsModalOpen(false);
+  };
 
   const columns = [
     columnHelper.accessor("name", {
@@ -60,15 +72,18 @@ export default function Home() {
             description={info.row.original.description}
             timeZone="America/New_York"
           ></AddToCalendarButton>
+          <Button style={{ marginLeft: "25px"}} size="sm" onClick={() => openModal(info.row.original)}>
+            Edit Details
+          </Button>
           <DeleteIcon
-            style={{ marginLeft: "25px" }}
+            style={{ marginLeft: "25px"}}
             color="red.500"
             cursor="pointer"
             onClick={() => removeEvent(info.row.original.name)}
           />
         </div>
       ),
-      header: "Actions"
+       header: "Actions"
     })
   ];
 
@@ -160,7 +175,16 @@ export default function Home() {
             />
           </div>
           <DataTableChakra columns={columns} data={events} />
-        </div>
+          {selectedEvent && db && userId && (
+          <EventDetailsModal
+            isOpen={isModalOpen}
+            onClose={closeModal}
+            event={selectedEvent}
+            db={db}
+            userId={userId}
+          />
+          )}
+      </div>
     )
   }
 
