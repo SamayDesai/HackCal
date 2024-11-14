@@ -20,21 +20,43 @@ import {
   Textarea,
 } from '@chakra-ui/react'
 
-import { useToast } from '@chakra-ui/react'
 import { InitOpenAi, ProcessImageRequest } from '@/app/openai';
+
+import { useToast } from '@chakra-ui/react'
 import { Event } from '@/app/models';
 import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
 import { addDoc, collection, Firestore, getDocs, query, where } from 'firebase/firestore';
-import { userAgent } from 'next/server';
+// import { userAgent } from 'next/server';
+
+// export async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
+//   'use server'
+//   let openai = await InitOpenAi()
+//   let newEvents = await ProcessImageRequest(openai, file)
+//   setEvents(newEvents.concat(events))
+// }
 
 async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
-    let openai = await InitOpenAi()
-    let newEvents = await ProcessImageRequest(openai, file)
-    setEvents(newEvents.concat(events))
-    return ""
+  try {
+    const response = await fetch('api/process-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ base64File: file }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to process image');
+    }
+
+    const data = await response.json();
+    const newEvents = data.events;
+    setEvents([...events, ...newEvents]);
+  } catch (error) {
+    console.error(error);
+    // Handle error (e.g., show a toast notification)
+  }
 }
-
-
 
 const Form1 = ({ file, setFile }: any) => {
   const [show, setShow] = useState(false)
@@ -123,6 +145,7 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
 
 
   const handleClick = async () => {
+                  console.log('hi1') 
                   if (file !== "") {
                     setStep(step + 1)
                     if (step === 3) {
@@ -130,8 +153,9 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
                     } else {
                       setProgress(progress + 50)
                     }
-
-                    await ProcessImage(file, events, setEvents)
+                    console.log('hi')
+                    console.log(await ProcessImage(file, events, setEvents))
+                    console.log('hi2')
                     setIsEventsUpdated(true)
                   }
   }
@@ -171,7 +195,7 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
                   setStep(step - 1)
                   setProgress(progress - 50)
                 }}
-                isDisabled={step === 1}
+                isDisabled={step === 1 && file.length == 0}
                 colorScheme="teal"
                 variant="solid"
                 w="7rem"

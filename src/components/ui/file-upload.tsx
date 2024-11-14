@@ -60,9 +60,16 @@ export default function FileUpload({ file, setFile }: any) {
                 let files = e.target.files;
                 if (files && files[0]) {
                   if (files[0].type.startsWith('image/')) {
-                    let blobUrl = URL.createObjectURL(files[0]);
-                    console.log(blobUrl)
-                    setFile(blobUrl);
+                    const fr = new FileReader();
+                    fr.readAsDataURL(files[0]);
+
+                    fr.onload = (ev) => {
+                      const res = fr.result;
+                      console.log(res)
+                      setFile(res);
+                    }
+                    // let blobUrl = URL.createObjectURL(files[0]);
+                    // console.log(files)
                   } else {
                     alert('Please select an image file');
                   }

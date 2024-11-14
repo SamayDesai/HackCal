@@ -3,6 +3,7 @@
 import OpenAI from "openai"
 import { promises as fs } from 'fs';
 import { Event, parseEvents } from "./models";
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export async function InitOpenAi() {
     return new OpenAI({
@@ -18,6 +19,24 @@ export async function TestApiCall(openai: OpenAI) {
 
     return response
 }
+
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    try {
+      const { file } = req.body;
+  
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+  
+      const events = await ProcessImageRequest(openai, file);
+  
+      res.status(200).json({ events });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Failed to process image' });
+    }
+  }
 
 // TODO: Modify return type to just be JSON, parse to Event later
 export async function ProcessImageRequest(openai: OpenAI, file_path: string) {

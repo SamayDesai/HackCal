@@ -16,6 +16,9 @@ import GetUserId from "./firebase/auth";
 
 import { AddToCalendarButton } from "add-to-calendar-button-react"
 import { DeleteIcon } from "@chakra-ui/icons";
+import { InitOpenAi, TestApiCall, ProcessImageRequest, TestProcessImageRequest } from "./openai";
+
+
 
 export default function Home() {
   const columnHelper = createColumnHelper<Event>();
@@ -160,3 +163,4 @@ export default function Home() {
         </div>
     )
   }
+
