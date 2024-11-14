@@ -42,7 +42,7 @@ async function ProcessImage(file: string, events: Event[], setEvents: (events: E
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ base64File: file }),
+      body: JSON.stringify({ file }),
     });
 
     if (!response.ok) {
@@ -154,7 +154,7 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
                       setProgress(progress + 50)
                     }
                     console.log('hi')
-                    console.log(await ProcessImage(file, events, setEvents))
+                    await ProcessImage(file, events, setEvents)
                     console.log('hi2')
                     setIsEventsUpdated(true)
                   }

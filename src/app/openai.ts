@@ -57,7 +57,7 @@ export async function TestProcessImageRequest() {
     // return events
 }
 
-async function parseImageForEvents(openai: OpenAI, encoded_image: string) {
+export async function parseImageForEvents(openai: OpenAI, encoded_image: string) {
 
     const EVENTS_PROMPT = "Take the information off of this image. Collect all event names and their associated start and end times. Store this in a JSON format with each event being represented as a JSON object with name, start, end times, location, and find a description. Only provide the exact location for the event. If there are multiple events, put the events in order. Start and End times should be represented in ISO-6801 format with time zone based on location found above if possible, else default to user location's time zone. If that isn't available, then set it to Eastern Daylight Time. Only present me with the JSON with no other text. There should also only be five fields: name, start, end, location, and description fields in this JSON."
 
