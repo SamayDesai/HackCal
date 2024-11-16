@@ -20,14 +20,14 @@ import {
   Textarea,
 } from '@chakra-ui/react'
 
-import { InitOpenAi, ProcessImageRequest } from '@/app/openai';
 
 import { useToast } from '@chakra-ui/react'
 import { Event } from '@/app/models';
 import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
 import { addDoc, collection, Firestore, getDocs, query, where } from 'firebase/firestore';
 
-async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void) {
+async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void, db: Firestore | undefined,
+userId: string) {
   try {
     const response = await fetch('api/process-image', {
       method: 'POST',
@@ -43,7 +43,12 @@ async function ProcessImage(file: string, events: Event[], setEvents: (events: E
 
     const data = await response.json();
     const newEvents = data.events;
-    setEvents([...events, ...newEvents]);
+
+    if (db && userId) {
+      for (const event of newEvents) {
+        await WriteNewEvent(db, userId, event);
+      }
+    }
   } catch (error) {
     console.error(error);
   }
@@ -138,27 +143,37 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
 
 
   const handleClick = async () => {
-    if (userId) {
-      if (file !== "") {
-        setStep(step + 1)
-        if (step === 3) {
-          setProgress(100)
-        } else {
-          setProgress(progress + 50)
-        }
-        await ProcessImage(file, events, setEvents)
-        setIsEventsUpdated(true)
+    if (file !== "") {
+      setStep(step + 1)
+      if (step === 3) {
+        setProgress(100)
+      } else {
+        setProgress(progress + 50)
       }
+      await ProcessImage(file, events, setEvents, db, userId)
+      setIsEventsUpdated(true)
     }
-    else {
-      toast({
-        title: 'Please log in!',
-        description: "You must log in before uploading a picture.",
-        status: 'error',
-        duration: 3000,
-        isClosable: true,
-      });
-    }
+    // if (userId) {
+    //   if (file !== "") {
+    //     setStep(step + 1)
+    //     if (step === 3) {
+    //       setProgress(100)
+    //     } else {
+    //       setProgress(progress + 50)
+    //     }
+    //     await ProcessImage(file, events, setEvents)
+    //     setIsEventsUpdated(true)
+    //   }
+    // }
+    // else {
+    //   toast({
+    //     title: 'Please log in!',
+    //     description: "You must log in before uploading a picture.",
+    //     status: 'error',
+    //     duration: 3000,
+    //     isClosable: true,
+    //   });
+    // }
   }
 
   return (
