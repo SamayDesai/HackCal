@@ -21,9 +21,13 @@ import {
   getDocs,
   where,
   collection,
+  Timestamp,
+  deleteDoc,
 } from "firebase/firestore";
 import { Event } from "@/app/models";
 import dayjs, { Dayjs } from "dayjs";
+import DatetimePickerHourCycle from "@/components/ui/date-time";
+import { WriteNewEvent } from "./firebase/firestore";
 
 interface EventDetailsModalProps {
   isOpen: boolean;
@@ -43,11 +47,43 @@ export default function EventDetailsModal({
   const [eventName, setEventName] = useState(event.name);
   const [eventLocation, setEventLocation] = useState(event.location);
   const [description, setDescription] = useState(event.description);
+  const [eventStart, setStartDate] = useState<Dayjs>(dayjs(event.start));
+  const [eventEnd, setEndDate] = useState<Dayjs>(dayjs(event.end));
 
   const [isNameTouched, setIsNameTouched] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const toast = useToast();
+
+  const removeEvent = async (eventName: string) => {
+    if (!db || !userId) {
+        console.error("Database or user ID not available");
+        return;
+    }
+  
+    try {
+      const eventsCollection = collection(db, "users", userId, "events");
+      
+      const q = query(eventsCollection, where("name", "==", eventName));
+      
+      const querySnapshot = await getDocs(q);
+      
+      if (querySnapshot.empty) {
+        console.log(`No event found with name '${eventName}'`);
+        return;
+      }
+  
+      const deletePromises = querySnapshot.docs.map((docSnapshot) => deleteDoc(docSnapshot.ref));
+      
+      await Promise.all(deletePromises);
+      
+      console.log(`Deleted ${querySnapshot.size} event(s) with name '${eventName}'`);
+
+  
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -116,13 +152,25 @@ export default function EventDetailsModal({
 
       const eventDoc = eventSnapshot.docs[0];
 
-      await updateDoc(eventDoc.ref, {
-        name: eventName.trim(),
-        location: eventLocation.trim(),
-        description: description.trim(),
-        // start: startDate.toDate(),
-        // end: endDate.toDate(),
-      });
+      const newEvent = {
+        name: eventName,
+        location: eventLocation,
+        start: eventStart,
+        end: eventEnd,
+        description: description,
+      };
+
+      await removeEvent(eventName);
+      await WriteNewEvent(db, userId, newEvent);
+
+
+      // await updateDoc(eventDoc.ref, {
+      //   name: eventName.trim(),
+      //   location: eventLocation.trim(),
+      //   description: description.trim(),
+      //   start: eventStart,
+      //   end: eventEnd,
+      // });
 
       toast({
         title: "Event Updated",
@@ -134,6 +182,7 @@ export default function EventDetailsModal({
 
       onClose();
     } catch (error) {
+      console.log(error);
       console.error("Error updating event:", error);
       toast({
         title: "Update Failed",
@@ -174,17 +223,17 @@ export default function EventDetailsModal({
             )}
           </FormControl>
 
-          {/*
+          
           <DatetimePickerHourCycle
-            selectedDate={startDate}
+            selectedDate={eventStart}
             onDateChange={(date) => date && setStartDate(date)}
             time="start"
           />
           <DatetimePickerHourCycle
-            selectedDate={endDate}
+            selectedDate={eventEnd}
             onDateChange={(date) => date && setEndDate(date)}
             time="end"
-          /> */}
+          />
 
           <FormControl mt={4}>
             <FormLabel>Location</FormLabel>
