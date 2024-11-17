@@ -22,12 +22,11 @@ import {
 
 
 import { useToast } from '@chakra-ui/react'
-import { Event } from '@/app/models';
 import { InitFirestore, WriteNewEvent } from '@/app/firebase/firestore';
-import { addDoc, collection, Firestore, getDocs, query, where } from 'firebase/firestore';
+import { collection, Firestore, getDocs, query, where } from 'firebase/firestore';
 
-async function ProcessImage(file: string, events: Event[], setEvents: (events: Event[]) => void, db: Firestore | undefined,
-userId: string) {
+async function ProcessImage(file: string, db: Firestore | undefined,
+userId: string, toast: any) {
   try {
     const response = await fetch('api/process-image', {
       method: 'POST',
@@ -46,7 +45,21 @@ userId: string) {
 
     if (db && userId) {
       for (const event of newEvents) {
-        await WriteNewEvent(db, userId, event);
+        const eventsRef = collection(db, "users", userId, "events");
+        const q = query(eventsRef, where("name", "==", event.name));
+        const querySnapshot = await getDocs(q);
+        if (querySnapshot.empty) {
+          await WriteNewEvent(db, userId, event);
+        } else {
+          toast({
+            title: `An event with name ${event.name} is already in the table`,
+            description: "Your event names must be unique!",
+            status: 'error',
+            duration: 10000,
+            isClosable: true,
+          });
+        }
+
       }
     }
   } catch (error) {
@@ -63,12 +76,8 @@ const Form1 = ({ file, setFile }: any) => {
         Scan Your Picture!
       </Heading>
       <FileUpload file={file} setFile={setFile} >
-
       </FileUpload>
-
     </>
-
-
   )
 }
 
@@ -143,37 +152,27 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
 
 
   const handleClick = async () => {
-    if (file !== "") {
-      setStep(step + 1)
-      if (step === 3) {
-        setProgress(100)
-      } else {
-        setProgress(progress + 50)
+    if (userId) {
+      if (file !== "") {
+        setStep(step + 1)
+        if (step === 3) {
+          setProgress(100)
+        } else {
+          setProgress(progress + 50)
+        }
+        await ProcessImage(file, db, userId, toast)
+        setIsEventsUpdated(true)
       }
-      await ProcessImage(file, events, setEvents, db, userId)
-      setIsEventsUpdated(true)
     }
-    // if (userId) {
-    //   if (file !== "") {
-    //     setStep(step + 1)
-    //     if (step === 3) {
-    //       setProgress(100)
-    //     } else {
-    //       setProgress(progress + 50)
-    //     }
-    //     await ProcessImage(file, events, setEvents)
-    //     setIsEventsUpdated(true)
-    //   }
-    // }
-    // else {
-    //   toast({
-    //     title: 'Please log in!',
-    //     description: "You must log in before uploading a picture.",
-    //     status: 'error',
-    //     duration: 3000,
-    //     isClosable: true,
-    //   });
-    // }
+    else {
+      toast({
+        title: 'Please log in!',
+        description: "You must log in before uploading a picture.",
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   }
 
   return (
