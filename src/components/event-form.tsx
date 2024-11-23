@@ -27,6 +27,14 @@ import { collection, Firestore, getDocs, query, where } from 'firebase/firestore
 
 async function ProcessImage(file: string, db: Firestore | undefined,
 userId: string, toast: any) {
+  toast({
+    title: `Your events are being processed!`,
+    description: `Hang tight, they'll automatically be updated in the table!`,
+    status: 'success',
+    duration: 3000,
+    isClosable: true,
+  });
+
   try {
     const response = await fetch('api/process-image', {
       method: 'POST',
@@ -161,6 +169,7 @@ export default function EventForm({ events, setEvents, setIsEventsUpdated, userI
           setProgress(progress + 50)
         }
         await ProcessImage(file, db, userId, toast)
+
         setIsEventsUpdated(true)
       }
     }
